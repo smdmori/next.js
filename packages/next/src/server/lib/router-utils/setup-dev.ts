@@ -104,6 +104,7 @@ import {
   TurboPackConnectedAction,
 } from '../../dev/hot-reloader-types'
 import { debounce } from '../../utils'
+import { normalizeMetadataRoute } from '../../../lib/metadata/get-metadata-route'
 
 const wsServer = new ws.Server({ noServer: true })
 
@@ -648,7 +649,7 @@ async function startWatcher(opts: SetupOpts) {
 
     async function writeBuildManifest(): Promise<void> {
       const buildManifest = mergeBuildManifests(buildManifests.values())
-      const buildManifestPath = path.join(distDir, 'build-manifest.json')
+      const buildManifestPath = path.join(distDir, BUILD_MANIFEST)
       await clearCache(buildManifestPath)
       await writeFile(
         buildManifestPath,
@@ -885,6 +886,7 @@ async function startWatcher(opts: SetupOpts) {
               case 'client-success': // { clientId }
               case 'server-component-reload-page': // { clientId }
               case 'client-reload-page': // { clientId }
+              case 'client-removed-page': // { page }
               case 'client-full-reload': // { stackTrace, hadRuntimeError }
                 // TODO
                 break
@@ -999,7 +1001,13 @@ async function startWatcher(opts: SetupOpts) {
         }
 
         await currentEntriesHandling
-        const route = curEntries.get(page)
+        const route =
+          curEntries.get(page) ??
+          curEntries.get(
+            normalizeAppPath(
+              normalizeMetadataRoute(match?.definition?.page ?? inputPage)
+            )
+          )
 
         if (!route) {
           // TODO: why is this entry missing in turbopack?
