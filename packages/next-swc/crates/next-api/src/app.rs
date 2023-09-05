@@ -445,7 +445,6 @@ impl AppEndpoint {
             self.app_project.rsc_module_context(),
             self.app_project.edge_rsc_module_context(),
             loader_tree,
-            self.app_project.app_dir(),
             self.page.clone(),
             self.app_project.project().project_path(),
         )

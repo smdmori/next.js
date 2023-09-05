@@ -20,7 +20,6 @@ use turbopack_binding::{
             context::AssetContext,
             environment::ServerAddr,
             file_source::FileSource,
-            issue::IssueExt,
             reference_type::{
                 EcmaScriptModulesReferenceSubType, EntryReferenceSubType, ReferenceType,
             },
@@ -61,10 +60,7 @@ use crate::{
     fallback::get_fallback_page,
     loader_tree::{LoaderTreeModule, ServerComponentTransition},
     mode::NextMode,
-    next_app::{
-        metadata::{route::get_app_metadata_route_source, UnsupportedDynamicMetadataIssue},
-        AppPage, AppPath, PathSegment,
-    },
+    next_app::{metadata::route::get_app_metadata_route_source, AppPage, AppPath, PathSegment},
     next_client::{
         context::{
             get_client_assets_path, get_client_module_options_context,
@@ -755,7 +751,6 @@ async fn create_app_page_source_for_route(
         Vc::upcast(
             AppRenderer {
                 runtime_entries,
-                app_dir,
                 context_ssr,
                 context,
                 server_root,
@@ -800,7 +795,6 @@ async fn create_app_not_found_page_source(
         Vc::upcast(
             AppRenderer {
                 runtime_entries,
-                app_dir,
                 context_ssr,
                 context,
                 server_root,
@@ -918,7 +912,6 @@ async fn create_app_route_source_for_metadata(
 #[turbo_tasks::value]
 struct AppRenderer {
     runtime_entries: Vc<Sources>,
-    app_dir: Vc<FileSystemPath>,
     context_ssr: Vc<ModuleAssetContext>,
     context: Vc<ModuleAssetContext>,
     project_path: Vc<FileSystemPath>,
@@ -933,7 +926,6 @@ impl AppRenderer {
     async fn entry(self: Vc<Self>, with_ssr: bool) -> Result<Vc<NodeRenderingEntry>> {
         let AppRenderer {
             runtime_entries,
-            app_dir,
             context_ssr,
             context,
             project_path,
@@ -963,15 +955,6 @@ impl AppRenderer {
             NextMode::DevServer,
         )
         .await?;
-
-        if !loader_tree_module.unsupported_metadata.is_empty() {
-            UnsupportedDynamicMetadataIssue {
-                app_dir,
-                files: loader_tree_module.unsupported_metadata,
-            }
-            .cell()
-            .emit();
-        }
 
         let mut result = RopeBuilder::from(indoc! {"
                 \"TURBOPACK { chunking-type: isolatedParallel; transition: next-edge-server-component }\";

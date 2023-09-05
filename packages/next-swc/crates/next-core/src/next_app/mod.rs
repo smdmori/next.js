@@ -18,7 +18,6 @@ pub use app_client_shared_chunks::get_app_client_shared_chunks;
 pub use app_entry::AppEntry;
 pub use app_page_entry::get_app_page_entry;
 pub use app_route_entry::get_app_route_entry;
-pub use metadata::UnsupportedDynamicMetadataIssue;
 use serde::{Deserialize, Serialize};
 use turbo_tasks::{trace::TraceRawVcs, TaskInput};
 

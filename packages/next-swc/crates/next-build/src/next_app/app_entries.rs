@@ -194,7 +194,6 @@ pub async fn get_app_entries(
                     // TODO add edge support
                     rsc_context,
                     *loader_tree,
-                    app_dir,
                     page.clone(),
                     project_root,
                 ),
