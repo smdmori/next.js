@@ -111,7 +111,7 @@ Alternatively, to revalidate all `fetch` requests in a route segment, you can us
 export const revalidate = 3600 // revalidate at most every hour
 ```
 
-If you have multiple fetch requests in a statically rendered route, and each has a different revalidation frequency. The lowest time will be used for all requests. For dynamically rendered routes, each `fetch` request will be revalidated independently.
+If you have multiple fetch requests in a statically rendered route, and each has a different revalidation frequency, the lowest time will be used for all requests. For dynamically rendered routes, each `fetch` request will be revalidated independently.
 
 Learn more about [time-based revalidation](/docs/app/building-your-application/caching#time-based-revalidation).
 
